@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.SupplyRecordMapper">
+    
+    <resultMap type="SupplyRecord" id="SupplyRecordResult">
+        <result property="recordId"    column="record_id"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="supplyQuantity"    column="supply_quantity"    />
+        <result property="supplyTime"    column="supply_time"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+
+    <sql id="selectSupplyRecordVo">
+        select record_id, supplier_id, product_id, supply_quantity, supply_time, created_at, updated_at, is_deleted from supply_record
+    </sql>
+
+    <select id="selectSupplyRecordList" parameterType="SupplyRecord" resultMap="SupplyRecordResult">
+        <include refid="selectSupplyRecordVo"/>
+        <where>  
+            <if test="supplierId != null  and supplierId != ''"> and supplier_id = #{supplierId}</if>
+            <if test="productId != null  and productId != ''"> and product_id = #{productId}</if>
+            <if test="params.beginSupplyQuantity != null and params.beginSupplyQuantity != '' and params.endSupplyQuantity != null and params.endSupplyQuantity != ''"> and supply_quantity between #{params.beginSupplyQuantity} and #{params.endSupplyQuantity}</if>
+            <if test="params.beginSupplyTime != null and params.beginSupplyTime != '' and params.endSupplyTime != null and params.endSupplyTime != ''"> and supply_time between #{params.beginSupplyTime} and #{params.endSupplyTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectSupplyRecordByRecordId" parameterType="String" resultMap="SupplyRecordResult">
+        <include refid="selectSupplyRecordVo"/>
+        where record_id = #{recordId}
+    </select>
+        
+    <insert id="insertSupplyRecord" parameterType="SupplyRecord">
+        insert into supply_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">record_id,</if>
+            <if test="supplierId != null and supplierId != ''">supplier_id,</if>
+            <if test="productId != null and productId != ''">product_id,</if>
+            <if test="supplyQuantity != null">supply_quantity,</if>
+            <if test="supplyTime != null">supply_time,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">#{recordId},</if>
+            <if test="supplierId != null and supplierId != ''">#{supplierId},</if>
+            <if test="productId != null and productId != ''">#{productId},</if>
+            <if test="supplyQuantity != null">#{supplyQuantity},</if>
+            <if test="supplyTime != null">#{supplyTime},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSupplyRecord" parameterType="SupplyRecord">
+        update supply_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="supplierId != null and supplierId != ''">supplier_id = #{supplierId},</if>
+            <if test="productId != null and productId != ''">product_id = #{productId},</if>
+            <if test="supplyQuantity != null">supply_quantity = #{supplyQuantity},</if>
+            <if test="supplyTime != null">supply_time = #{supplyTime},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+        </trim>
+        where record_id = #{recordId}
+    </update>
+
+    <delete id="deleteSupplyRecordByRecordId" parameterType="String">
+        delete from supply_record where record_id = #{recordId}
+    </delete>
+
+    <delete id="deleteSupplyRecordByRecordIds" parameterType="String">
+        delete from supply_record where record_id in 
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </delete>
+</mapper>

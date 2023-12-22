@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.RevenueStatisticsMapper">
+
+    <resultMap type="RevenueStatistics" id="RevenueStatisticsResult">
+        <result property="statId"    column="stat_id"    />
+        <result property="date"    column="date"    />
+        <result property="totalSales"    column="total_sales"    />
+        <result property="totalExpenses"    column="total_expenses"    />
+        <result property="netIncome"    column="net_income"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+
+    <sql id="selectRevenueStatisticsVo">
+        select stat_id, date, total_sales, total_expenses, net_income, created_at, updated_at, is_deleted from revenue_statistics
+    </sql>
+
+    <select id="selectRevenueStatisticsList" parameterType="RevenueStatistics" resultMap="RevenueStatisticsResult">
+        <include refid="selectRevenueStatisticsVo"/>
+        <where>
+            <if test="params.beginDate != null and params.beginDate != '' and params.endDate != null and params.endDate != ''"> and date between #{params.beginDate} and #{params.endDate}</if>
+        </where>
+    </select>
+
+    <select id="selectRevenueStatisticsByStatId" parameterType="String" resultMap="RevenueStatisticsResult">
+        <include refid="selectRevenueStatisticsVo"/>
+        where stat_id = #{statId}
+    </select>
+
+
+    <select id="selectRevenueStatisticsByDate" resultMap="RevenueStatisticsResult">
+        <include refid="selectRevenueStatisticsVo"/>
+        where DATE_FORMAT(date,'%Y-%m-%d') = #{date}
+    </select>
+
+    <insert id="insertRevenueStatistics" parameterType="RevenueStatistics">
+        insert into revenue_statistics
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="statId != null">stat_id,</if>
+            <if test="date != null">date,</if>
+            <if test="totalSales != null">total_sales,</if>
+            <if test="totalExpenses != null">total_expenses,</if>
+            <if test="netIncome != null">net_income,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="statId != null">#{statId},</if>
+            <if test="date != null">#{date},</if>
+            <if test="totalSales != null">#{totalSales},</if>
+            <if test="totalExpenses != null">#{totalExpenses},</if>
+            <if test="netIncome != null">#{netIncome},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRevenueStatistics" parameterType="RevenueStatistics">
+        update revenue_statistics
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="date != null">date = #{date},</if>
+            <if test="totalSales != null">total_sales = #{totalSales},</if>
+            <if test="totalExpenses != null">total_expenses = #{totalExpenses},</if>
+            <if test="netIncome != null">net_income = #{netIncome},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+        </trim>
+        where stat_id = #{statId}
+    </update>
+
+    <delete id="deleteRevenueStatisticsByStatId" parameterType="String">
+        delete from revenue_statistics where stat_id = #{statId}
+    </delete>
+
+    <delete id="deleteRevenueStatisticsByStatIds" parameterType="String">
+        delete from revenue_statistics where stat_id in
+        <foreach item="statId" collection="array" open="(" separator="," close=")">
+            #{statId}
+        </foreach>
+    </delete>
+</mapper>

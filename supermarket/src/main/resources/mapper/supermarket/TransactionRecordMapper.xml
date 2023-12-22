@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.TransactionRecordMapper">
+    
+    <resultMap type="TransactionRecord" id="TransactionRecordResult">
+        <result property="recordId"    column="record_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="transactionTime"    column="transaction_time"    />
+        <result property="transactionAmount"    column="transaction_amount"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+
+    <sql id="selectTransactionRecordVo">
+        select record_id, product_id, quantity, transaction_time, transaction_amount, created_at, updated_at, is_deleted from transaction_record
+    </sql>
+
+    <select id="selectTransactionRecordList" parameterType="TransactionRecord" resultMap="TransactionRecordResult">
+        <include refid="selectTransactionRecordVo"/>
+        <where>  
+            <if test="productId != null  and productId != ''"> and product_id like concat('%', #{productId}, '%')</if>
+            <if test="params.beginQuantity != null and params.beginQuantity != '' and params.endQuantity != null and params.endQuantity != ''"> and quantity between #{params.beginQuantity} and #{params.endQuantity}</if>
+            <if test="params.beginTransactionTime != null and params.beginTransactionTime != '' and params.endTransactionTime != null and params.endTransactionTime != ''"> and transaction_time between #{params.beginTransactionTime} and #{params.endTransactionTime}</if>
+            <if test="params.beginTransactionAmount != null and params.beginTransactionAmount != '' and params.endTransactionAmount != null and params.endTransactionAmount != ''"> and transaction_amount between #{params.beginTransactionAmount} and #{params.endTransactionAmount}</if>
+        </where>
+    </select>
+    
+    <select id="selectTransactionRecordByRecordId" parameterType="String" resultMap="TransactionRecordResult">
+        <include refid="selectTransactionRecordVo"/>
+        where record_id = #{recordId}
+    </select>
+        
+    <insert id="insertTransactionRecord" parameterType="TransactionRecord">
+        insert into transaction_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">record_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="transactionTime != null">transaction_time,</if>
+            <if test="transactionAmount != null">transaction_amount,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">#{recordId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="transactionTime != null">#{transactionTime},</if>
+            <if test="transactionAmount != null">#{transactionAmount},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransactionRecord" parameterType="TransactionRecord">
+        update transaction_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="transactionTime != null">transaction_time = #{transactionTime},</if>
+            <if test="transactionAmount != null">transaction_amount = #{transactionAmount},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+        </trim>
+        where record_id = #{recordId}
+    </update>
+
+    <delete id="deleteTransactionRecordByRecordId" parameterType="String">
+        delete from transaction_record where record_id = #{recordId}
+    </delete>
+
+    <delete id="deleteTransactionRecordByRecordIds" parameterType="String">
+        delete from transaction_record where record_id in 
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </delete>
+</mapper>

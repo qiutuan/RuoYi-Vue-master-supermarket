@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.ProductMapper">
+    
+    <resultMap type="Product" id="ProductResult">
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="price"    column="price"    />
+        <result property="stock"    column="stock"    />
+        <result property="imagePath"    column="image_path"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+
+    <sql id="selectProductVo">
+        select product_id, product_name, category_id, price, stock, image_path, created_at, updated_at, is_deleted from product
+    </sql>
+
+    <select id="selectProductList" parameterType="Product" resultMap="ProductResult">
+        <include refid="selectProductVo"/>
+        <where>  
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="categoryId != null  and categoryId != ''"> and category_id = #{categoryId}</if>
+        </where>
+    </select>
+    
+    <select id="selectProductByProductId" parameterType="String" resultMap="ProductResult">
+        <include refid="selectProductVo"/>
+        where product_id = #{productId}
+    </select>
+        
+    <insert id="insertProduct" parameterType="Product">
+        insert into product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="categoryId != null and categoryId != ''">category_id,</if>
+            <if test="price != null">price,</if>
+            <if test="stock != null">stock,</if>
+            <if test="imagePath != null">image_path,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="categoryId != null and categoryId != ''">#{categoryId},</if>
+            <if test="price != null">#{price},</if>
+            <if test="stock != null">#{stock},</if>
+            <if test="imagePath != null">#{imagePath},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProduct" parameterType="Product">
+        update product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="categoryId != null and categoryId != ''">category_id = #{categoryId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="stock != null">stock = #{stock},</if>
+            <if test="imagePath != null">image_path = #{imagePath},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+        </trim>
+        where product_id = #{productId}
+    </update>
+
+    <delete id="deleteProductByProductId" parameterType="String">
+        delete from product where product_id = #{productId}
+    </delete>
+
+    <delete id="deleteProductByProductIds" parameterType="String">
+        delete from product where product_id in 
+        <foreach item="productId" collection="array" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+    </delete>
+</mapper>
